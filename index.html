@@ -266,26 +266,34 @@
     border-bottom: 1px solid var(--border);
   }
 
-  .twilight-grid {
+  .twilight-grid3 {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
   }
 
   .twilight-col h3 {
     font-family: var(--serif);
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     color: var(--text);
     margin-bottom: 1.5rem;
+  }
+  
+  .twilight-col h3 span {
+    color: var(--violet2);
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 0.3rem;
   }
 
   .twilight-quote {
     font-family: var(--serif);
-    font-size: 1.05rem;
-    line-height: 1.8;
+    font-size: 0.95rem;
+    line-height: 1.7;
     color: #d8b4fe;
     border-left: 2px solid var(--violet);
-    padding-left: 1.5rem;
+    padding-left: 1.2rem;
     margin-bottom: 1.5rem;
     position: relative;
   }
@@ -293,10 +301,10 @@
   .twilight-quote span {
     display: block;
     font-family: var(--mono);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     letter-spacing: 0.05em;
     color: var(--muted);
-    margin-top: 1.2rem;
+    margin-top: 1rem;
     text-transform: uppercase;
   }
 
@@ -309,7 +317,7 @@
   .twilight-quote a:hover { color: var(--amber2); }
 
   .twilight-col p {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     color: #9a97aa;
     line-height: 1.75;
   }
@@ -401,13 +409,15 @@
   }
 
   /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    .twilight-grid3 { grid-template-columns: 1fr; gap: 2.5rem; }
+  }
   @media (max-width: 900px) {
     .hero { grid-template-columns: 1fr; }
     .panels { grid-template-columns: 1fr; }
     .panel { border-right: none; border-bottom: 1px solid var(--border); }
     .nietzsche { grid-template-columns: 1fr; gap: 1.5rem; }
     .nietzsche-tag { font-size: 1.5rem; }
-    .twilight-grid { grid-template-columns: 1fr; gap: 3rem; }
   }
 </style>
 </head>
@@ -420,7 +430,7 @@
     <h1><em>Apollonian</em><br>Frenzy</h1>
     <p class="hero-sub">The Jacobian of the Dionysian Event-Stream</p>
     <p class="hero-prose">
-      The structured, luminous forms of Apollo — meter, mask, image — are not the <em>opposite</em> of Dionysian chaos. They are its <strong>linearized sensitivity matrix</strong>: the event-stream of becoming, differentiated against itself, evaluated at the coordinate of the present moment. Greek tragedy held both faces simultaneously. That is why it could not be improved upon.
+      The structured, luminous forms of Apollo — meter, mask, image — are not the <em>opposite</em> of Dionysian chaos. They are its <strong>linearized sensitivity matrix</strong>: the event-stream of becoming, differentiated against itself, evaluated at the coordinate of the present moment. But beyond both the stream and its linearization lies the Architect: the decisive Will-to-Power that appends reality itself.
     </p>
   </div>
 
@@ -449,8 +459,8 @@
     <span class="comment">// the stream itself — uncoordinated, non-linear</span>
   </div>
   <div class="formula-block">
-    Tragedy&nbsp;&nbsp;&nbsp;:= det(J) ≠ 0<br>
-    <span class="comment">// form does not collapse the stream — full rank</span><br>
+    Architect&nbsp;&nbsp;:= Decision = Event<br>
+    <span class="comment">// The Will-to-Power that appends to history (V → I)</span><br>
     Comedy&nbsp;&nbsp;&nbsp;&nbsp;:= J → I<br>
     <span class="comment">// events decouple; tension resolves; nothing at stake</span>
   </div>
@@ -459,19 +469,19 @@
 <!-- ── THREE PANELS ── -->
 <div class="panels">
   <div class="panel">
-    <div class="panel-num">01</div>
-    <h3><span>Tensor / Okubonabona</span>Dionysian Stream</h3>
-    <p>The raw event-stream: overwhelming, undifferentiated, <strong>pre-personal</strong>. The Dionysian chorus does not narrate — it enacts. Each event is a sample from a distribution whose support is reality itself. No coordinates yet. No self yet.</p>
+    <div class="panel-num">I</div>
+    <h3><span>Tensor / Okubonabona</span>Dionysian Flood</h3>
+    <p>The raw event-stream: overwhelming, undifferentiated, <strong>pre-personal</strong>. The Dionysian chorus does not narrate — it enacts, discharging a system of passions. It is the uncompressed acoustic continuum (Hz), the immutable Ledger. No coordinates yet. No self yet.</p>
   </div>
   <div class="panel">
-    <div class="panel-num">02</div>
-    <h3><span>Matrix / Kubona</span>The Jacobian Appears</h3>
-    <p>Time-stamping the stream — assigning coordinates — <strong>is the Apollonian act</strong>. The Jacobian is the sensitivity of every event to every other, linearized at the present moment. This is not domestication of the Dionysian. It is the Dionysian becoming legible to itself.</p>
+    <div class="panel-num">II</div>
+    <h3><span>Matrix / Kubona</span>Apollonian Compressor</h3>
+    <p>Time-stamping the stream — stimulating the eye to acquire <strong>the power of vision</strong>. This is the Jacobian linearizing the Dionysian flood into legible coordinates. It is the discretizing triage of FastAPI, forcing the infinite into a matrix.</p>
   </div>
   <div class="panel">
-    <div class="panel-num">03</div>
-    <h3><span>Scalar / Ukubona</span>Tragic Insight</h3>
-    <p>The off-diagonal terms are the dramatic tension. When ∂Eᵢ/∂Eⱼ ≠ 0, one event <strong>bleeds into</strong> another — Oedipus's virtue is the instrument of his ruin. Tragedy requires a non-diagonal Jacobian. Comedy and farce drive J toward the identity.</p>
+    <div class="panel-num">V</div>
+    <h3><span>Scalar / Sawubona</span>The Architect's Will</h3>
+    <p>Neither stream nor matrix. This is the <strong>great act of will</strong> that collapses tension into a definitive, world-perturbing act (ArgMax). Decision is not state; decision is an <em>event</em>. The V → I cadence that appends the event back to the Dionysian Ledger.</p>
   </div>
 </div>
 
@@ -488,22 +498,32 @@
 
 <!-- ── TWILIGHT OF THE IDOLS ── -->
 <div class="twilight-section">
-  <div class="twilight-grid">
+  <div class="twilight-grid3">
     <div class="twilight-col">
-      <h3>The Raw Flux of Behavior</h3>
+      <h3><span>Stage I. Tensor</span> The Dionysian Flood</h3>
       <blockquote class="twilight-quote">
         "In the Dionysian state... the whole system of passions is stimulated and intensified, so that it discharges itself by all the means of expression at once... He enters into every skin, into every passion: he is continually changing himself."
         <span>— <a href="https://www.gutenberg.org/files/52263/52263-h/52263-h.htm" target="_blank">Twilight of the Idols, §10</a></span>
       </blockquote>
-      <p>This is the landscape before measurement—the unconstrained, noisy stream of human action. It is raw behavior lacking error loss, demanding the lens of the Jacobian to be framed, parsed, and translated into a comprehensible sensory interface.</p>
+      <p>This is the uncompressed, non-linear landscape of behavior. It is reality before it has been assigned coordinates. The continuous acoustic field (Hz) and the append-only Ledger. The system encounters the world here as a massive, discharging flood.</p>
     </div>
+    
     <div class="twilight-col">
-      <h3>The Architect's Ecosystem</h3>
+      <h3><span>Stage II. Matrix</span> The Apollonian Compressor</h3>
+      <blockquote class="twilight-quote">
+        "Apollonian ecstasy acts above all as a force stimulating the eye, so that it acquires the power of vision. The painter, the sculptor, the epic poet are essentially visionaries."
+        <span>— <a href="https://www.gutenberg.org/files/52263/52263-h/52263-h.htm" target="_blank">Twilight of the Idols, §10</a></span>
+      </blockquote>
+      <p>The Jacobian at work. The Apollonian is not peace; it is the frantic, discretizing act of giving form to the flood. It forces the infinite into a matrix (12TET) so that the raw flux becomes legible. It builds the interface.</p>
+    </div>
+
+    <div class="twilight-col">
+      <h3><span>Stage V. Scalar</span> The Architect's Will</h3>
       <blockquote class="twilight-quote">
         "The architect manifests neither a Dionysian nor an Apollonian state: In his case it is the great act of will... In the architectural structure, man’s pride, man’s triumph over gravitation, man’s will to power, assume a visible form."
         <span>— <a href="https://www.gutenberg.org/files/52263/52263-h/52263-h.htm" target="_blank">Twilight of the Idols, §11</a></span>
       </blockquote>
-      <p>Beyond the Apollonian interface lies the overarching ecosystem. The Architect builds the grand structure that dictates the rules of descent, imposing a macro-will that dictates the boundaries of both the wild flux and its linearization.</p>
+      <p>The ArgMax. The Decision as an Event. The Architect stands outside the binary of flux and vision, issuing a commanding action that refuses to erase history. It commits an irreversible trace (I⁷ Cadence), appending a new tensor to the Ledger.</p>
     </div>
   </div>
 </div>
