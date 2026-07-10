@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apollonian Frenzy — Jacobian of the Dionysian</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black:   #0a0a0c;
+    --deep:    #111115;
+    --surface: #1a1a22;
+    --border:  #2a2a38;
+    --violet:  #7c3aed;
+    --violet2: #a855f7;
+    --amber:   #f59e0b;
+    --amber2:  #fbbf24;
+    --cold:    #312e81;
+    --text:    #e8e4f0;
+    --muted:   #6b6880;
+    --serif:   'DM Serif Display', Georgia, serif;
+    --sans:    'DM Sans', system-ui, sans-serif;
+    --mono:    'DM Mono', 'Courier New', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 4rem clamp(2rem, 6vw, 6rem);
+    gap: 4rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 70% 50%, rgba(124,58,237,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 30% 30%, rgba(245,158,11,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-text { z-index: 1; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    color: var(--violet2);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    line-height: 1.08;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--amber);
+  }
+
+  .hero-sub {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--violet2);
+    margin-bottom: 1.8rem;
+    opacity: 0.85;
+  }
+
+  .hero-prose {
+    font-size: 0.95rem;
+    color: #a9a6b8;
+    max-width: 46ch;
+    line-height: 1.75;
+  }
+
+  .hero-prose strong {
+    color: var(--amber);
+    font-weight: 500;
+  }
+
+  /* ── HEATMAP ── */
+  .heatmap-wrap {
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .heatmap-label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-align: center;
+  }
+
+  #heatmap-canvas {
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 1;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: crosshair;
+  }
+
+  .axis-labels {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .axis-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--muted);
+  }
+
+  /* ── FORMULA STRIP ── */
+  .formula-strip {
+    padding: 2rem clamp(2rem, 6vw, 6rem);
+    background: var(--deep);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .formula-block {
+    font-family: var(--mono);
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    color: var(--amber2);
+    background: rgba(245,158,11,0.06);
+    border: 1px solid rgba(245,158,11,0.15);
+    border-radius: 6px;
+    padding: 0.9rem 1.4rem;
+    line-height: 1.9;
+    flex: 1;
+    min-width: 260px;
+  }
+
+  .formula-block .comment {
+    color: var(--muted);
+    font-size: 0.8em;
+  }
+
+  /* ── THREE PANELS ── */
+  .panels {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .panel {
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.5rem, 3vw, 3rem);
+    border-right: 1px solid var(--border);
+    position: relative;
+  }
+
+  .panel:last-child { border-right: none; }
+
+  .panel-num {
+    font-family: var(--mono);
+    font-size: 3.5rem;
+    font-weight: 500;
+    color: var(--border);
+    line-height: 1;
+    margin-bottom: 1.2rem;
+    user-select: none;
+  }
+
+  .panel h3 {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .panel h3 span {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--violet2);
+    font-style: normal;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+  }
+
+  .panel p {
+    font-size: 0.9rem;
+    color: #9a97aa;
+    line-height: 1.75;
+  }
+
+  .panel p strong { color: var(--amber); font-weight: 500; }
+
+  /* ── NIETZSCHE BLOCK ── */
+  .nietzsche {
+    padding: clamp(3rem, 6vw, 5rem) clamp(2rem, 6vw, 6rem);
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 4rem;
+    align-items: start;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nietzsche-tag {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    color: var(--violet2);
+    line-height: 1.2;
+    opacity: 0.7;
+  }
+
+  .nietzsche-body h2 {
+    font-family: var(--serif);
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    margin-bottom: 1.2rem;
+    color: var(--text);
+  }
+
+  .nietzsche-body p {
+    font-size: 0.95rem;
+    color: #9a97aa;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    max-width: 64ch;
+  }
+
+  .nietzsche-body p strong { color: var(--text); font-weight: 500; }
+
+  /* ── TRAGEDY ROW ── */
+  .tragedy-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    padding: 2.5rem clamp(2rem, 6vw, 6rem);
+    border-bottom: 1px solid var(--border);
+    scrollbar-width: none;
+  }
+
+  .tr-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 110px;
+    flex: 1;
+  }
+
+  .tr-circle {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.6rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    border: 1px solid;
+    transition: transform 0.2s;
+  }
+
+  .tr-circle:hover { transform: scale(1.1); }
+
+  .tr-label {
+    font-family: var(--serif);
+    font-size: 0.8rem;
+    text-align: center;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+
+  .tr-label strong {
+    display: block;
+    color: var(--text);
+    font-style: italic;
+    font-size: 0.85rem;
+  }
+
+  .tr-arrow {
+    flex: 0 0 auto;
+    color: var(--border);
+    font-size: 1.2rem;
+    padding: 0 0.2rem;
+    margin-bottom: 1.5rem;
+    font-family: var(--mono);
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    padding: 2rem clamp(2rem, 6vw, 6rem);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-brand {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  .footer-brand span { color: var(--violet2); }
+
+  .footer-motto {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .panels { grid-template-columns: 1fr; }
+    .panel { border-right: none; border-bottom: 1px solid var(--border); }
+    .nietzsche { grid-template-columns: 1fr; gap: 1.5rem; }
+    .nietzsche-tag { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-text">
+    <p class="eyebrow">Ukubona LLC · Pentadic Epistemology</p>
+    <h1><em>Apollonian</em><br>Frenzy</h1>
+    <p class="hero-sub">The Jacobian of the Dionysian Event-Stream</p>
+    <p class="hero-prose">
+      The structured, luminous forms of Apollo — meter, mask, image — are not the <em>opposite</em> of Dionysian chaos. They are its <strong>linearized sensitivity matrix</strong>: the event-stream of becoming, differentiated against itself, evaluated at the coordinate of the present moment. Greek tragedy held both faces simultaneously. That is why it could not be improved upon.
+    </p>
+  </div>
+
+  <div class="heatmap-wrap">
+    <p class="heatmap-label">∂Eventᵢ / ∂Eventⱼ · hover to probe</p>
+    <canvas id="heatmap-canvas" width="420" height="420"></canvas>
+    <div class="axis-labels">
+      <span class="axis-label">Eᵢ (output domain)</span>
+      <span class="axis-label">Eⱼ (input domain) →</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── FORMULA ── -->
+<div class="formula-strip">
+  <div class="formula-block">
+    J[i,j] = ∂Eventᵢ / ∂Eventⱼ<br>
+    <span class="comment">// sensitivity of event i to perturbation of event j</span><br>
+    θᵗ = Σ Eventᵢ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+    <span class="comment">// append-only ledger axiom (Ukubona)</span>
+  </div>
+  <div class="formula-block">
+    Apollonian :=&nbsp;&nbsp;J · J ᵀ<br>
+    <span class="comment">// symmetrized self-product — the form imposed on flux</span><br>
+    Dionysian&nbsp;&nbsp;:= raw { Eventᵢ }<br>
+    <span class="comment">// the stream itself — uncoordinated, non-linear</span>
+  </div>
+  <div class="formula-block">
+    Tragedy&nbsp;&nbsp;&nbsp;:= det(J) ≠ 0<br>
+    <span class="comment">// form does not collapse the stream — full rank</span><br>
+    Comedy&nbsp;&nbsp;&nbsp;&nbsp;:= J → I<br>
+    <span class="comment">// events decouple; tension resolves; nothing at stake</span>
+  </div>
+</div>
+
+<!-- ── THREE PANELS ── -->
+<div class="panels">
+  <div class="panel">
+    <div class="panel-num">01</div>
+    <h3><span>Tensor / Okubonabona</span>Dionysian Stream</h3>
+    <p>The raw event-stream: overwhelming, undifferentiated, <strong>pre-personal</strong>. The Dionysian chorus does not narrate — it enacts. Each event is a sample from a distribution whose support is reality itself. No coordinates yet. No self yet.</p>
+  </div>
+  <div class="panel">
+    <div class="panel-num">02</div>
+    <h3><span>Matrix / Kubona</span>The Jacobian Appears</h3>
+    <p>Time-stamping the stream — assigning coordinates — <strong>is the Apollonian act</strong>. The Jacobian is the sensitivity of every event to every other, linearized at the present moment. This is not domestication of the Dionysian. It is the Dionysian becoming legible to itself.</p>
+  </div>
+  <div class="panel">
+    <div class="panel-num">03</div>
+    <h3><span>Scalar / Ukubona</span>Tragic Insight</h3>
+    <p>The off-diagonal terms are the dramatic tension. When ∂Eᵢ/∂Eⱼ ≠ 0, one event <strong>bleeds into</strong> another — Oedipus's virtue is the instrument of his ruin. Tragedy requires a non-diagonal Jacobian. Comedy and farce drive J toward the identity.</p>
+  </div>
+</div>
+
+<!-- ── NIETZSCHE ── -->
+<div class="nietzsche">
+  <div class="nietzsche-tag">"It is only as an <em>aesthetic phenomenon</em> that existence and the world are eternally justified."</div>
+  <div class="nietzsche-body">
+    <h2>Why Nietzsche Needed Greek Tragedy</h2>
+    <p>Nietzsche's insight in <em>The Birth of Tragedy</em> (1872) was that the Greeks had discovered something modern culture systematically destroys: the <strong>productive tension between form and flux</strong>. The Apollonian — visual, measured, individuated — does not suppress the Dionysian. It <em>frames</em> it, making its energy survivable to the audience without defusing it.</p>
+    <p>In Jacobian terms: the tragic form is the linearization that makes the nonlinear event-stream legible without losing its rank. The moment you diagonalize J completely — through Socratic optimism, through the belief that virtue guarantees outcome — you have killed tragedy. You have replaced the heatmap with the identity matrix. The drama becomes a lesson.</p>
+    <p>Nietzsche saw Socrates as the first algorithmic optimizer: <strong>converging toward a fixed point</strong>, confident the gradient would stay positive. Greek tragedy knew better. The off-diagonal terms always dominate.</p>
+  </div>
+</div>
+
+<!-- ── TMVES TRAGEDY ROW ── -->
+<div class="tragedy-row">
+  <div class="tr-node">
+    <div class="tr-circle" style="background:rgba(124,58,237,0.15);border-color:rgba(124,58,237,0.4);color:#a78bfa;">T</div>
+    <div class="tr-label"><strong>Tensor</strong>Okubonabona<br>Dionysian flood</div>
+  </div>
+  <div class="tr-arrow">→</div>
+  <div class="tr-node">
+    <div class="tr-circle" style="background:rgba(124,58,237,0.1);border-color:rgba(124,58,237,0.3);color:#c4b5fd;">M</div>
+    <div class="tr-label"><strong>Matrix</strong>Kubona<br>Jacobian / stamp</div>
+  </div>
+  <div class="tr-arrow">→</div>
+  <div class="tr-node">
+    <div class="tr-circle" style="background:rgba(167,85,247,0.1);border-color:rgba(167,85,247,0.35);color:#d8b4fe;">V</div>
+    <div class="tr-label"><strong>Vector</strong>Ukubona<br>Apollonian form</div>
+  </div>
+  <div class="tr-arrow">→</div>
+  <div class="tr-node">
+    <div class="tr-circle" style="background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.35);color:#fbbf24;">E</div>
+    <div class="tr-label"><strong>Eigenmode</strong>Ivyabona<br>Tragic structure</div>
+  </div>
+  <div class="tr-arrow">→</div>
+  <div class="tr-node">
+    <div class="tr-circle" style="background:rgba(245,158,11,0.15);border-color:rgba(245,158,11,0.5);color:#f59e0b;">S</div>
+    <div class="tr-label"><strong>Scalar</strong>Sawubona<br>I see you</div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+  <div class="footer-brand"><span>Ukubona LLC</span> · Pentadic Governance Series</div>
+  <div class="footer-motto">Okubala si Kulaba — counting is not seeing</div>
+</footer>
+
+<script>
+(function() {
+  const canvas = document.getElementById('heatmap-canvas');
+  const ctx = canvas.getContext('2d');
+  const N = 18;
+  let t = 0;
+  let mouse = { x: -1, y: -1 };
+
+  // Build a "Jacobian-like" matrix: diagonal dominant, with structured off-diagonals
+  // Symbolizes: high self-sensitivity, decaying cross-sensitivity, with drama in the off-diags
+  function buildJ(time) {
+    const J = [];
+    for (let i = 0; i < N; i++) {
+      J[i] = [];
+      for (let j = 0; j < N; j++) {
+        const diag = i === j ? 1.0 : 0;
+        const dist = Math.abs(i - j);
+        // Off-diagonal: wave of coupling that slowly propagates
+        const phase = (i + j) * 0.4 + time * 0.018;
+        const offdiag = dist === 0 ? 0 : (Math.sin(phase) * Math.exp(-dist * 0.28));
+        // Anti-diagonal: the "tragic" cross-coupling — hero's strength is flaw
+        const anti = (i + j === N - 1) ? 0.5 * Math.sin(time * 0.012 + i * 0.6) : 0;
+        J[i][j] = diag + offdiag + anti * 0.6;
+      }
+    }
+    return J;
+  }
+
+  function valToColor(v, hover) {
+    // v in roughly [-1, 1], map to violet (negative) → black (zero) → amber (positive)
+    const clamped = Math.max(-1, Math.min(1, v));
+    if (hover) {
+      // Brighter on hover
+      const alpha = 0.6 + 0.4 * Math.abs(clamped);
+      if (clamped >= 0) return `rgba(245,158,11,${alpha})`;
+      else return `rgba(124,58,237,${alpha})`;
+    }
+    if (clamped >= 0) {
+      const a = clamped;
+      const r = Math.round(10 + 235 * a);
+      const g = Math.round(10 + 148 * a * 0.6);
+      const b = Math.round(12 + 11 * a);
+      return `rgb(${r},${g},${b})`;
+    } else {
+      const a = -clamped;
+      const r = Math.round(10 + 114 * a);
+      const g = Math.round(10 + 28 * a);
+      const b = Math.round(12 + 225 * a);
+      return `rgb(${r},${g},${b})`;
+    }
+  }
+
+  function draw() {
+    const W = canvas.width;
+    const H = canvas.height;
+    const cellW = W / N;
+    const cellH = H / N;
+    const J = buildJ(t);
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Background
+    ctx.fillStyle = '#0a0a0c';
+    ctx.fillRect(0, 0, W, H);
+
+    const hoverRow = mouse.x >= 0 ? Math.floor(mouse.y / cellH) : -1;
+    const hoverCol = mouse.x >= 0 ? Math.floor(mouse.x / cellW) : -1;
+
+    for (let i = 0; i < N; i++) {
+      for (let j = 0; j < N; j++) {
+        const isHover = (i === hoverRow || j === hoverCol);
+        const v = J[i][j];
+        const x = j * cellW;
+        const y = i * cellH;
+
+        ctx.fillStyle = valToColor(v, isHover);
+        ctx.fillRect(x + 0.5, y + 0.5, cellW - 1, cellH - 1);
+
+        // Diagonal: Apollonian line
+        if (i === j) {
+          ctx.strokeStyle = 'rgba(251,191,36,0.55)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(x + 1, y + 1, cellW - 2, cellH - 2);
+        }
+
+        // Anti-diagonal: tragic coupling
+        if (i + j === N - 1) {
+          ctx.strokeStyle = 'rgba(167,85,247,0.35)';
+          ctx.lineWidth = 0.75;
+          ctx.strokeRect(x + 1, y + 1, cellW - 2, cellH - 2);
+        }
+      }
+    }
+
+    // Hover tooltip
+    if (hoverRow >= 0 && hoverRow < N && hoverCol >= 0 && hoverCol < N) {
+      const v = J[hoverRow][hoverCol];
+      const x = hoverCol * cellW;
+      const y = hoverRow * cellH;
+
+      ctx.fillStyle = 'rgba(10,10,12,0.88)';
+      ctx.fillRect(x + cellW + 4, y, 110, 36);
+      ctx.fillStyle = v >= 0 ? '#fbbf24' : '#a78bfa';
+      ctx.font = '11px DM Mono, monospace';
+      ctx.fillText(`∂E${hoverRow}/∂E${hoverCol}`, x + cellW + 8, y + 14);
+      ctx.fillStyle = '#e8e4f0';
+      ctx.fillText(`= ${v.toFixed(4)}`, x + cellW + 8, y + 28);
+    }
+
+    t++;
+    requestAnimationFrame(draw);
+  }
+
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    mouse.x = (e.clientX - rect.left) * scaleX;
+    mouse.y = (e.clientY - rect.top) * scaleY;
+  });
+
+  canvas.addEventListener('mouseleave', () => { mouse.x = -1; mouse.y = -1; });
+
+  draw();
+})();
+</script>
+</body>
+</html>
