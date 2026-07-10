@@ -259,6 +259,61 @@
 
   .nietzsche-body p strong { color: var(--text); font-weight: 500; }
 
+  /* ── TWILIGHT OF THE IDOLS ── */
+  .twilight-section {
+    padding: clamp(3rem, 6vw, 5rem) clamp(2rem, 6vw, 6rem);
+    background: var(--deep);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .twilight-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
+
+  .twilight-col h3 {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  .twilight-quote {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #d8b4fe;
+    border-left: 2px solid var(--violet);
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .twilight-quote span {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-top: 1.2rem;
+    text-transform: uppercase;
+  }
+
+  .twilight-quote a {
+    color: var(--amber);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .twilight-quote a:hover { color: var(--amber2); }
+
+  .twilight-col p {
+    font-size: 0.9rem;
+    color: #9a97aa;
+    line-height: 1.75;
+  }
+
   /* ── TRAGEDY ROW ── */
   .tragedy-row {
     display: flex;
@@ -352,6 +407,7 @@
     .panel { border-right: none; border-bottom: 1px solid var(--border); }
     .nietzsche { grid-template-columns: 1fr; gap: 1.5rem; }
     .nietzsche-tag { font-size: 1.5rem; }
+    .twilight-grid { grid-template-columns: 1fr; gap: 3rem; }
   }
 </style>
 </head>
@@ -430,6 +486,28 @@
   </div>
 </div>
 
+<!-- ── TWILIGHT OF THE IDOLS ── -->
+<div class="twilight-section">
+  <div class="twilight-grid">
+    <div class="twilight-col">
+      <h3>The Raw Flux of Behavior</h3>
+      <blockquote class="twilight-quote">
+        "In the Dionysian state... the whole system of passions is stimulated and intensified, so that it discharges itself by all the means of expression at once... He enters into every skin, into every passion: he is continually changing himself."
+        <span>— <a href="https://www.gutenberg.org/files/52263/52263-h/52263-h.htm" target="_blank">Twilight of the Idols, §10</a></span>
+      </blockquote>
+      <p>This is the landscape before measurement—the unconstrained, noisy stream of human action. It is raw behavior lacking error loss, demanding the lens of the Jacobian to be framed, parsed, and translated into a comprehensible sensory interface.</p>
+    </div>
+    <div class="twilight-col">
+      <h3>The Architect's Ecosystem</h3>
+      <blockquote class="twilight-quote">
+        "The architect manifests neither a Dionysian nor an Apollonian state: In his case it is the great act of will... In the architectural structure, man’s pride, man’s triumph over gravitation, man’s will to power, assume a visible form."
+        <span>— <a href="https://www.gutenberg.org/files/52263/52263-h/52263-h.htm" target="_blank">Twilight of the Idols, §11</a></span>
+      </blockquote>
+      <p>Beyond the Apollonian interface lies the overarching ecosystem. The Architect builds the grand structure that dictates the rules of descent, imposing a macro-will that dictates the boundaries of both the wild flux and its linearization.</p>
+    </div>
+  </div>
+</div>
+
 <!-- ── TMVES TRAGEDY ROW ── -->
 <div class="tragedy-row">
   <div class="tr-node">
@@ -472,8 +550,6 @@
   let t = 0;
   let mouse = { x: -1, y: -1 };
 
-  // Build a "Jacobian-like" matrix: diagonal dominant, with structured off-diagonals
-  // Symbolizes: high self-sensitivity, decaying cross-sensitivity, with drama in the off-diags
   function buildJ(time) {
     const J = [];
     for (let i = 0; i < N; i++) {
@@ -481,10 +557,8 @@
       for (let j = 0; j < N; j++) {
         const diag = i === j ? 1.0 : 0;
         const dist = Math.abs(i - j);
-        // Off-diagonal: wave of coupling that slowly propagates
         const phase = (i + j) * 0.4 + time * 0.018;
         const offdiag = dist === 0 ? 0 : (Math.sin(phase) * Math.exp(-dist * 0.28));
-        // Anti-diagonal: the "tragic" cross-coupling — hero's strength is flaw
         const anti = (i + j === N - 1) ? 0.5 * Math.sin(time * 0.012 + i * 0.6) : 0;
         J[i][j] = diag + offdiag + anti * 0.6;
       }
@@ -493,10 +567,8 @@
   }
 
   function valToColor(v, hover) {
-    // v in roughly [-1, 1], map to violet (negative) → black (zero) → amber (positive)
     const clamped = Math.max(-1, Math.min(1, v));
     if (hover) {
-      // Brighter on hover
       const alpha = 0.6 + 0.4 * Math.abs(clamped);
       if (clamped >= 0) return `rgba(245,158,11,${alpha})`;
       else return `rgba(124,58,237,${alpha})`;
@@ -524,8 +596,6 @@
     const J = buildJ(t);
 
     ctx.clearRect(0, 0, W, H);
-
-    // Background
     ctx.fillStyle = '#0a0a0c';
     ctx.fillRect(0, 0, W, H);
 
@@ -542,14 +612,12 @@
         ctx.fillStyle = valToColor(v, isHover);
         ctx.fillRect(x + 0.5, y + 0.5, cellW - 1, cellH - 1);
 
-        // Diagonal: Apollonian line
         if (i === j) {
           ctx.strokeStyle = 'rgba(251,191,36,0.55)';
           ctx.lineWidth = 1;
           ctx.strokeRect(x + 1, y + 1, cellW - 2, cellH - 2);
         }
 
-        // Anti-diagonal: tragic coupling
         if (i + j === N - 1) {
           ctx.strokeStyle = 'rgba(167,85,247,0.35)';
           ctx.lineWidth = 0.75;
@@ -558,7 +626,6 @@
       }
     }
 
-    // Hover tooltip
     if (hoverRow >= 0 && hoverRow < N && hoverCol >= 0 && hoverCol < N) {
       const v = J[hoverRow][hoverCol];
       const x = hoverCol * cellW;
